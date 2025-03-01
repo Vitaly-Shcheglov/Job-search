@@ -1,6 +1,6 @@
 from typing import Any, Dict, Optional
 
-from src.exceptions import InvalidSalaryError
+from exceptions import InvalidSalaryError
 
 
 class Vacancy:

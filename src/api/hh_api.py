@@ -3,7 +3,7 @@ from typing import Any, Dict, List
 import requests
 
 from src.api.base_api import BaseAPI
-from src.exceptions import VacancyNotFoundError
+from exceptions import VacancyNotFoundError
 
 
 class HeadHunterAPI(BaseAPI):
