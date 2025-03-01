@@ -20,7 +20,7 @@ class JSONStorage(BaseStorage):
             f.write(json.dumps(vacancy.__dict__) + "\n")
 
     def get_vacancies(self) -> List[Vacancy]:
-        """Получает все вакансии из файла. """
+        """Получает все вакансии из файла."""
         vacancies = []
         try:
             with open(self.__filename, "r") as f:
@@ -32,7 +32,7 @@ class JSONStorage(BaseStorage):
         return vacancies
 
     def delete_vacancy(self, vacancy: Vacancy) -> None:
-        """Удаляет вакансию из файла. """
+        """Удаляет вакансию из файла."""
         vacancies = self.get_vacancies()
         vacancies = [v for v in vacancies if v.name != vacancy.name]
 

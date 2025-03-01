@@ -29,12 +29,10 @@ def user_interaction() -> None:
             vacancies_list.append(vacancy)
             storage.add_vacancy(vacancy)
 
-
         filtered_vacancies: List[Vacancy] = filter_vacancies(vacancies_list, filter_words)
         ranged_vacancies: List[Vacancy] = get_vacancies_by_salary(filtered_vacancies, salary_range)
         sorted_vacancies: List[Vacancy] = sort_vacancies(ranged_vacancies)
         top_vacancies: List[Vacancy] = get_top_vacancies(sorted_vacancies, top_n)
-
 
         print_vacancies(top_vacancies)
 
