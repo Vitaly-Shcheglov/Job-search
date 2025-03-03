@@ -11,17 +11,20 @@ from utils import filter_vacancies, get_top_vacancies, get_vacancies_by_salary, 
 
 @pytest.fixture
 def mock_hh_api() -> Generator[Mock, None, None]:
+    """Создает фикстуру для подмены метода get_vacancies класса HeadHunterAPI."""
     with patch.object(HeadHunterAPI, "get_vacancies", return_value=...) as mock:
         yield mock
 
 
 @pytest.fixture
 def mock_storage() -> Generator[Mock, None, None]:
+    """Создает фикстуру для подмены метода add_vacancy класса JSONStorage."""
     with patch.object(JSONStorage, "add_vacancy", return_value=...) as mock:
         yield mock
 
 
 def test_user_interaction(mock_hh_api: MagicMock, mock_storage: MagicMock) -> None:
+    """Тест пользовательского взаимодействия."""
     mock_hh_api.return_value = [
         {
             "name": "Developer",
@@ -44,6 +47,7 @@ def test_user_interaction(mock_hh_api: MagicMock, mock_storage: MagicMock) -> No
 
 
 def test_get_vacancies_by_salary() -> None:
+    """Тест фильтрации вакансий по диапазону зарплат."""
     vacancies: List[Vacancy] = [
         Vacancy(name="Developer", salary={"from": 120000}, requirements="Python", url="https://api.hh.ru/vacancies"),
         Vacancy(name="Designer", salary={"from": 80000}, requirements="Photoshop", url="https://api.hh.ru/vacancies"),
@@ -55,6 +59,7 @@ def test_get_vacancies_by_salary() -> None:
 
 
 def test_filter_vacancies() -> None:
+    """Тест фильтрации вакансий по ключевым словам."""
     vacancies: List[Vacancy] = [
         Vacancy(
             name="Developer",
@@ -77,6 +82,7 @@ def test_filter_vacancies() -> None:
 
 
 def test_sort_vacancies() -> None:
+    """Тест сортировки вакансий по зарплате."""
     vacancies: List[Vacancy] = [
         Vacancy(name="Developer", salary={"from": 120000}, requirements="Python", url="https://api.hh.ru/vacancies"),
         Vacancy(name="Designer", salary={"from": 80000}, requirements="Photoshop", url="https://api.hh.ru/vacancies"),
@@ -88,6 +94,7 @@ def test_sort_vacancies() -> None:
 
 
 def test_get_top_vacancies() -> None:
+    """Тест получения топ N вакансий."""
     vacancies: List[Vacancy] = [
         Vacancy(name="Developer", salary={"from": 120000}, requirements="Python", url="https://api.hh.ru/vacancies"),
         Vacancy(name="Designer", salary={"from": 80000}, requirements="Photoshop", url="https://api.hh.ru/vacancies"),

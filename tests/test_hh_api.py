@@ -3,19 +3,24 @@ from unittest.mock import Mock, patch
 
 import requests  # Добавляем импорт для requests
 
-from src.exceptions import InvalidSalaryError, VacancyNotFoundError
+from exceptions import VacancyNotFoundError
 from src.api.hh_api import HeadHunterAPI
 
 
 class TestHeadHunterAPI(unittest.TestCase):
+    """Тестовый класс для проверки функциональности класса HeadHunterAPI."""
 
     def setUp(self) -> None:
         """Инициализация экземпляра HeadHunterAPI перед каждым тестом."""
         self.api = HeadHunterAPI()
 
     @patch("src.api.hh_api.requests.get")
-    def test_get_vacancies_success(self, mock_get):
-        """Тест успешного получения вакансий."""
+    def test_get_vacancies_success(self, mock_get: Mock) -> None:
+        """Тест успешного получения вакансий.
+
+        Проверяет, что метод get_vacancies возвращает список вакансий
+        при успешном выполнении запроса к API.
+        """
         mock_response = Mock()
         mock_response.json.return_value = {
             "items": [
@@ -43,8 +48,12 @@ class TestHeadHunterAPI(unittest.TestCase):
         self.assertEqual(vacancies[1]["name"], "Tester")  # Проверка имени второй вакансии
 
     @patch("src.api.hh_api.requests.get")
-    def test_no_vacancies_found(self, mock_get):
-        """Тест обработки случая, когда вакансии не найдены."""
+    def test_no_vacancies_found(self, mock_get: Mock) -> None:
+        """Тест обработки случая, когда вакансии не найдены.
+
+        Проверяет, что при отсутствии вакансий метод get_vacancies
+        вызывает исключение VacancyNotFoundError.
+        """
         mock_response = Mock()
         mock_response.json.return_value = {}
         mock_response.raise_for_status = Mock()
@@ -54,8 +63,12 @@ class TestHeadHunterAPI(unittest.TestCase):
             self.api.get_vacancies("nonexistent_query")  # Ожидаем, что будет выброшено исключение
 
     @patch("src.api.hh_api.requests.get")
-    def test_http_error(self, mock_get):
-        """Тест обработки HTTP ошибки."""
+    def test_http_error(self, mock_get: Mock) -> None:
+        """Тест обработки HTTP ошибки.
+
+        Проверяет, что метод get_vacancies вызывает исключение HTTPError
+        при возникновении ошибки HTTP.
+        """
         mock_response = Mock()
         mock_response.raise_for_status.side_effect = requests.HTTPError("HTTP Error")  # Теперь requests доступен
         mock_get.return_value = mock_response
@@ -64,8 +77,12 @@ class TestHeadHunterAPI(unittest.TestCase):
             self.api.get_vacancies("developer")  # Ожидаем, что будет выброшено исключение HTTPError
 
     @patch("src.api.hh_api.requests.get")
-    def test_response_is_not_dict(self, mock_get):
-        """Тест обработки случая, когда ответ не является словарем."""
+    def test_response_is_not_dict(self, mock_get: Mock) -> None:
+        """Тест обработки случая, когда ответ не является словарем.
+
+        Проверяет, что метод get_vacancies вызывает исключение ValueError
+        если ответ от API не является словарем.
+        """
         mock_response = Mock()
         mock_response.json.return_value = []
         mock_response.raise_for_status = Mock()
@@ -75,5 +92,6 @@ class TestHeadHunterAPI(unittest.TestCase):
             self.api.get_vacancies("developer")  # Ожидаем, что будет выброшено исключение ValueError
 
 
+# Запуск тестов
 if __name__ == "__main__":
     unittest.main()

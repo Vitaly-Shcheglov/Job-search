@@ -4,7 +4,6 @@ from typing import Generator
 import pytest
 
 from src.models.vacancy import Vacancy
-from src.storage.base_storage import BaseStorage
 from src.storage.json_storage import JSONStorage
 
 

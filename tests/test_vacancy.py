@@ -3,16 +3,21 @@ import sys
 import unittest
 from typing import Dict, Optional
 
-from src.exceptions import InvalidSalaryError
+from exceptions import InvalidSalaryError
 from src.models.vacancy import Vacancy
 
+# Добавляем путь к src в sys.path для импорта
 sys.path.append(os.path.abspath("src"))
 
 
 class TestVacancy(unittest.TestCase):
+    """Тестовый класс для проверки функциональности класса Vacancy."""
 
     def test_vacancy_initialization(self) -> None:
-        """Тест успешной инициализации вакансии."""
+        """Тест успешной инициализации вакансии.
+
+        Проверяет, что экземпляр Vacancy корректно создается с заданными атрибутами.
+        """
         salary: Dict[str, Optional[int]] = {"from": 1000, "to": 2000}
         vacancy = Vacancy(
             name="Developer", requirements="Python, Django", salary=salary, url="https://api.hh.ru/vacancies"
@@ -24,7 +29,11 @@ class TestVacancy(unittest.TestCase):
         self.assertEqual(vacancy.url, "https://api.hh.ru/vacancies")
 
     def test_min_salary_greater_than_max_salary(self) -> None:
-        """Тест обработки случая, когда минимальная зарплата больше максимальной."""
+        """Тест обработки случая, когда минимальная зарплата больше максимальной.
+
+        Проверяет, что выбрасывается ошибка InvalidSalaryError при
+        попытке создать вакансию с некорректным диапазоном зарплат.
+        """
         with self.assertRaises(InvalidSalaryError):
             Vacancy(
                 name="Developer",
@@ -34,7 +43,11 @@ class TestVacancy(unittest.TestCase):
             )
 
     def test_negative_salary(self) -> None:
-        """Тест обработки отрицательной зарплаты."""
+        """Тест обработки отрицательной зарплаты.
+
+        Проверяет, что выбрасывается ошибка InvalidSalaryError при
+        попытке создать вакансию с отрицательными значениями зарплаты.
+        """
         with self.assertRaises(InvalidSalaryError):
             Vacancy(
                 name="Developer",
@@ -51,7 +64,11 @@ class TestVacancy(unittest.TestCase):
             )
 
     def test_vacancy_string_representation(self) -> None:
-        """Тест строкового представления вакансии."""
+        """Тест строкового представления вакансии.
+
+        Проверяет, что строковое представление вакансии формируется правильно
+        при наличии указанных атрибутов.
+        """
         salary: Dict[str, Optional[int]] = {"from": 1000, "to": 2000}
         vacancy = Vacancy(
             name="Developer", requirements="Python, Django", salary=salary, url="https://api.hh.ru/vacancies"
@@ -63,19 +80,25 @@ class TestVacancy(unittest.TestCase):
         self.assertEqual(str(vacancy), expected_str)
 
     def test_vacancy_string_representation_no_salary(self) -> None:
-        """Тест строкового представления вакансии без указания зарплаты."""
+        """Тест строкового представления вакансии без указания зарплаты.
+
+        Проверяет, что строковое представление вакансии формируется правильно
+        при отсутствии зарплаты.
+        """
         vacancy = Vacancy(
             name="Developer", requirements="Python, Django", salary=None, url="https://api.hh.ru/vacancies"
         )
         expected_str = (
             "Вакансия: Developer, Требования: Python, Django, "
-            "Зарплата: Не указана,"
-            " Ссылка: https://api.hh.ru/vacancies"
+            "Зарплата: Не указана, Ссылка: https://api.hh.ru/vacancies"
         )
         self.assertEqual(str(vacancy), expected_str)
 
     def test_vacancy_comparison(self) -> None:
-        """Тест сравнения вакансий по зарплате."""
+        """Тест сравнения вакансий по зарплате.
+
+        Проверяет, что вакансии корректно сравниваются по минимальной зарплате.
+        """
         vacancy1 = Vacancy(
             name="Junior Developer",
             requirements="Python",
@@ -91,3 +114,7 @@ class TestVacancy(unittest.TestCase):
 
         self.assertTrue(vacancy1 < vacancy2)
         self.assertFalse(vacancy2 < vacancy1)
+
+
+if __name__ == "__main__":
+    unittest.main()

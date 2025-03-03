@@ -7,6 +7,7 @@ from src.storage.json_storage import JSONStorage
 
 
 def user_interaction() -> None:
+    """Взаимодействует с пользователем для получения и фильтрации вакансий."""
     hh_api = HeadHunterAPI()
     storage = JSONStorage()
 
