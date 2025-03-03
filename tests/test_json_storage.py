@@ -1,46 +1,76 @@
-import unittest
-from typing import Dict
+from pathlib import Path
+from typing import Generator
 
-from exceptions import InvalidSalaryError
+import pytest
+
 from src.models.vacancy import Vacancy
+from src.storage.base_storage import BaseStorage
 from src.storage.json_storage import JSONStorage
 
 
-class TestVacancy(unittest.TestCase):
+@pytest.fixture
+def json_storage(tmp_path: Path) -> Generator[JSONStorage, None, None]:
+    """Создает временное хранилище для вакансий."""
+    temp_file = tmp_path / "vacancies.json"
+    storage = JSONStorage(str(temp_file))
+    yield storage
+    # Удаление временного файла не требуется, так как pytest автоматически очистит tmp_path
 
-    def test_create_vacancy_valid_salary(self) -> None:
-        valid_salary: Dict[str, int] = {"from": 50000, "to": 70000}
-        vacancy = Vacancy("Software Engineer", "Python, SQL", valid_salary, "http://example.com")
-        self.assertEqual(vacancy.name, "Software Engineer")
-        self.assertEqual(vacancy.requirements, "Python, SQL")
-        self.assertEqual(vacancy.salary, valid_salary)
-        self.assertEqual(vacancy.url, "http://example.com")
 
-    def test_create_vacancy_negative_salary(self) -> None:
-        with self.assertRaises(InvalidSalaryError):
-            Vacancy("Software Engineer", "Python, SQL", {"from": -50000, "to": 70000}, "http://example.com")
+def test_add_vacancy(json_storage: JSONStorage) -> None:
+    """Тест добавления вакансии."""
+    vacancy = Vacancy(
+        name="Developer",
+        salary={"from": 1000, "to": 2000},  # Убедитесь, что salary – это словарь
+        requirements="Python, Django",
+        url="https://api.hh.ru/vacancies",
+    )
+    json_storage.add_vacancy(vacancy)
 
-    def test_create_vacancy_from_greater_than_to(self) -> None:
-        with self.assertRaises(InvalidSalaryError):
-            Vacancy("Software Engineer", "Python, SQL", {"from": 70000, "to": 50000}, "http://example.com")
+    # Проверяем, что вакансия добавилась
+    vacancies = json_storage.get_vacancies()
+    assert len(vacancies) == 1
+    assert vacancies[0].name == "Developer"
 
-    def test_create_vacancy_invalid_salary_format(self) -> None:
-        with self.assertRaises(InvalidSalaryError):
-            Vacancy("Software Engineer", "Python, SQL", "invalid_salary", "http://example.com")
 
-    def test_compare_vacancies(self) -> None:
-        vacancy1 = Vacancy(
-            "Junior Developer", "Basic knowledge of Python", {"from": 30000, "to": 40000}, "http://example.com/1"
-        )
-        vacancy2 = Vacancy(
-            "Senior Developer", "Expert knowledge of Python", {"from": 60000, "to": 80000}, "http://example.com/2"
-        )
-        self.assertTrue(vacancy1 < vacancy2)
+def test_add_duplicate_vacancy(json_storage: JSONStorage) -> None:
+    """Тест добавления дубликата вакансии."""
+    vacancy = Vacancy(
+        name="Developer",
+        salary={"from": 1000, "to": 2000},
+        requirements="Python, Django",
+        url="https://api.hh.ru/vacancies",
+    )
+    json_storage.add_vacancy(vacancy)
 
-    def test_str_representation(self) -> None:
-        vacancy = Vacancy("Software Engineer", "Python, SQL", {"from": 50000, "to": 70000}, "http://example.com")
-        expected_str = (
-            "Вакансия: Software Engineer, Требования: Python, SQL,"
-            " Зарплата: {'from': 50000, 'to': 70000}, Ссылка: http://example.com"
-        )
-        self.assertEqual(str(vacancy), expected_str)
+    # Пытаемся добавить дубликат
+    json_storage.add_vacancy(vacancy)
+
+    # Проверяем, что вакансия не добавилась второй раз
+    vacancies = json_storage.get_vacancies()
+    assert len(vacancies) == 1
+
+
+def test_delete_vacancy(json_storage: JSONStorage) -> None:
+    """Тест удаления вакансии."""
+    vacancy = Vacancy(
+        name="Developer",
+        salary={"from": 1000, "to": 2000},
+        requirements="Python, Django",
+        url="https://api.hh.ru/vacancies",
+    )
+    json_storage.add_vacancy(vacancy)
+
+    # Удаляем вакансию
+    json_storage.delete_vacancy(vacancy)
+
+    # Проверяем, что вакансий больше нет
+    vacancies = json_storage.get_vacancies()
+    assert len(vacancies) == 0
+
+
+def test_get_vacancies_empty(json_storage: JSONStorage) -> None:
+    """Тест получения пустого списка вакансий."""
+    # Если файл пустой, должны получать пустой список
+    vacancies = json_storage.get_vacancies()
+    assert vacancies == []

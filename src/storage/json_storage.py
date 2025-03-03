@@ -17,7 +17,15 @@ class JSONStorage(BaseStorage):
             print(f"Вакансия с именем '{vacancy.name}' уже добавлена.")
             return
         with open(self.__filename, "a") as f:
-            f.write(json.dumps(vacancy.__dict__) + "\n")
+            # Предполагается, что у Vacancy есть атрибуты name, salary и т.д.
+            vacancy_data = {
+                "name": vacancy.name,
+                "requirements": vacancy.requirements,
+                "url": vacancy.url,
+                "salary": vacancy.salary,
+                # добавьте другие атрибуты по мере необходимости
+            }
+            f.write(json.dumps(vacancy_data) + "\n")
 
     def get_vacancies(self) -> List[Vacancy]:
         """Получает все вакансии из файла."""
@@ -38,4 +46,11 @@ class JSONStorage(BaseStorage):
 
         with open(self.__filename, "w") as f:
             for v in vacancies:
-                f.write(json.dumps(v.__dict__) + "\n")
+                vacancy_data = {
+                    "name": v.name,
+                    "requirements": v.requirements,
+                    "url": v.url,
+                    "salary": v.salary,
+                    # добавьте другие атрибуты по мере необходимости
+                }
+                f.write(json.dumps(vacancy_data) + "\n")

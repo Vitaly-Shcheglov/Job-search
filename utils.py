@@ -1,7 +1,7 @@
 from typing import List
 
+from exceptions import VacancyNotFoundError
 from src.api.hh_api import HeadHunterAPI
-from src.exceptions import VacancyNotFoundError
 from src.models.vacancy import Vacancy
 from src.storage.json_storage import JSONStorage
 

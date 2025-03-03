@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional
 
+from exceptions import InvalidSalaryError, VacancyNotFoundError, ZeroQuantityError
 from src.api.hh_api import HeadHunterAPI
-from src.exceptions import InvalidSalaryError, VacancyNotFoundError, ZeroQuantityError
 from src.models.vacancy import Vacancy
 
 
